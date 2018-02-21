@@ -14,34 +14,43 @@
 
 #include <Adafruit_RGBLCDShield.h>
 
-#include <functional>
-#include <list>
-
 #if ARDUINO >= 100
  #include "Arduino.h"
 #else
  #include "WProgram.h"
 #endif
 
-typedef struct node {
-    char *menuString;
-    struct node *parent;
-    struct node *prevSibling;
-    struct node *nextSibling;
-    struct node *firstChild;
-} menuItem;
+typedef void (*genericVoidFunction) ();
 
-typedef struct node *menuPtr;
+typedef struct node {
+  const char *menuString;
+  struct node *parent;
+  struct node *firstChild;
+  struct node *prevSibling;
+  struct node *nextSibling;
+	genericVoidFunction functionCallback;
+} menuItem;
 
 class Adafruit_LCDShield_Menu {
 public:
 	Adafruit_LCDShield_Menu();
 	~Adafruit_LCDShield_Menu();
 
-	Adafruit_LCDShield_Menu& init(Adafruit_RGBLCDShield lcd);
+	void init(Adafruit_RGBLCDShield lcd);
+
+	bool navigateToParent();
+	bool navigateToChild();
+	bool navigateToPreviousSibling();
+	bool navigateToNextSibling();
+	bool executeFunctionCallback();
 protected:
 
 private:
+	void navigateToItem(menuItem item);
+	void showMenuItemOnLCD(menuItem item = 0);
+
+	menuItem _currentMenuItem;
 	Adafruit_RGBLCDShield _lcd;
+
 	
 };

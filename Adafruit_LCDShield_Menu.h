@@ -13,6 +13,6 @@
 #ifndef Adafruit_LCDShield_Menu_h
 #define Adafruit_LCDShield_Menu_h
 
-#include "Adafruit_LCD_Shield_Menu.hpp"
+#include "Adafruit_LCDShield_Menu.hpp"
 
 #endif //Adafruit_LCDShield_Menu_h
