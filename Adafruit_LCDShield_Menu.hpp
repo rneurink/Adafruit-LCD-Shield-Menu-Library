@@ -12,44 +12,53 @@
 
 #pragma once
 
+#include "Arduino.h"
 #include <Adafruit_RGBLCDShield.h>
-
-#if ARDUINO >= 100
- #include "Arduino.h"
-#else
- #include "WProgram.h"
-#endif
 
 typedef void (*genericVoidFunction) ();
 
-typedef struct node {
-  const char *menuString;
-  struct node *parent;
-  struct node *firstChild;
-  struct node *prevSibling;
-  struct node *nextSibling;
-	genericVoidFunction functionCallback;
-} menuItem;
+class LCDMenuItem {
+	friend class Adafruit_LCDShield_Menu;
+public:
+	LCDMenuItem();
+	LCDMenuItem(const char* menuString, genericVoidFunction functionCallback = nullptr);
+
+	void addChild(LCDMenuItem item);
+protected:
+	const char *_menuString;
+	LCDMenuItem *_parent;
+	LCDMenuItem *_firstChild;
+	LCDMenuItem *_prevSibling;
+	LCDMenuItem *_nextSibling;
+	genericVoidFunction _functionCallback;
+private:
+
+};
 
 class Adafruit_LCDShield_Menu {
 public:
-	Adafruit_LCDShield_Menu();
+	Adafruit_LCDShield_Menu(Adafruit_RGBLCDShield lcd);
 	~Adafruit_LCDShield_Menu();
 
-	void init(Adafruit_RGBLCDShield lcd);
+	void init();
 
+	void setRootMenu(LCDMenuItem item);
+
+	void navigateToRoot();
 	bool navigateToParent();
 	bool navigateToChild();
 	bool navigateToPreviousSibling();
 	bool navigateToNextSibling();
 	bool executeFunctionCallback();
+	
 protected:
 
 private:
-	void navigateToItem(menuItem item);
-	void showMenuItemOnLCD(menuItem item = 0);
+	void navigateToItem(LCDMenuItem item);
+	void showMenuItemOnLCD();
 
-	menuItem _currentMenuItem;
+	LCDMenuItem _rootMenuItem;
+	LCDMenuItem _currentMenuItem;
 	Adafruit_RGBLCDShield _lcd;
 
 	

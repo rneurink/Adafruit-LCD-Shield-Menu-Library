@@ -1,18 +1,26 @@
 #######################################
-# Syntax Coloring Map For ExampleLibrary
+# Syntax Coloring Map For the
+# Adafruit LCDShield Menu library
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
+Adafruit_LCDShield_Menu	KEYWORD1
+LCDMenuItem	KEYWORD1
 LCDMenu	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-doSomething	KEYWORD2
+init	KEYWORD2
+navigateToParent	KEYWORD2
+navigateToChild	KEYWORD2
+navigateToPreviousSibling	KEYWORD2
+navigateToNextSibling	KEYWORD2
+executeFunctionCallback	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)

@@ -12,73 +12,121 @@
 
 #include "Adafruit_LCDShield_Menu.hpp"
 
+LCDMenuItem::LCDMenuItem() {
+	_menuString = "Empty";
+	_parent = 0;
+	_firstChild = 0;
+	_prevSibling = 0;
+	_nextSibling = 0;
+	_functionCallback = 0;
+}
+
+LCDMenuItem::LCDMenuItem(const char *menuString, genericVoidFunction functionCallback) {
+	_menuString = menuString;
+	_parent = 0;
+	_firstChild = 0;
+	_prevSibling = 0;
+	_nextSibling = 0;
+	if (functionCallback != nullptr) _functionCallback = functionCallback;
+	else _functionCallback = 0;
+}
+
+void LCDMenuItem::addChild(LCDMenuItem item) {
+	if (this->_firstChild == 0) {
+		this->_firstChild = &item;
+		item._parent = this;
+	}
+	else {
+		LCDMenuItem *child = this->_firstChild;
+		
+		// Get last sibling of the parent (this) 
+		while (child->_nextSibling != 0)
+		{
+			child = child->_nextSibling;
+		}
+		child->_nextSibling = &item;
+		item._prevSibling = child;
+		item._parent = this;			
+	}
+}
+
+
 /* ------------------ Constructor ---------------------- */
-Adafruit_LCDShield_Menu::Adafruit_LCDShield_Menu() {
-	
+Adafruit_LCDShield_Menu::Adafruit_LCDShield_Menu(Adafruit_RGBLCDShield lcd) {
+	_lcd = lcd;
 }
 /* ------------------ Destructor ----------------------- */
 Adafruit_LCDShield_Menu::~Adafruit_LCDShield_Menu() {
 
 }
 
-void Adafruit_LCDShield_Menu::init(Adafruit_RGBLCDShield lcd) {
-	_lcd = lcd;
+void Adafruit_LCDShield_Menu::init() {
 	
 }
 
+void Adafruit_LCDShield_Menu::setRootMenu(LCDMenuItem item) {
+	_rootMenuItem = item;
+}
+
 /* ------------------ Navigation functions ------------- */
+void Adafruit_LCDShield_Menu::navigateToRoot() {
+	_currentMenuItem = _rootMenuItem;
+	showMenuItemOnLCD();
+}
+
 bool Adafruit_LCDShield_Menu::navigateToParent() {
-	if (_currentMenuItem.parent == 0) return false;
-  _currentMenuItem = *_currentMenuItem.parent;
+	if (_currentMenuItem._parent == 0) return false;
+  _currentMenuItem = *_currentMenuItem._parent;
   showMenuItemOnLCD();
 	return true;
 }
 
 bool Adafruit_LCDShield_Menu::navigateToChild() {
-	if (_currentMenuItem.firstChild == 0) return false;
-  _currentMenuItem = *_currentMenuItem.firstChild;
+	if (_currentMenuItem._firstChild == 0) return false;
+  _currentMenuItem = *_currentMenuItem._firstChild;
   showMenuItemOnLCD();
 	return true;
 }
 
 bool Adafruit_LCDShield_Menu::navigateToPreviousSibling() {
-	if (_currentMenuItem.prevSibling == 0) return false;
-  _currentMenuItem = *_currentMenuItem.prevSibling;
+	if (_currentMenuItem._prevSibling == 0) return false;
+  _currentMenuItem = *_currentMenuItem._prevSibling;
   showMenuItemOnLCD();
 	return true;
 }
 
 bool Adafruit_LCDShield_Menu::navigateToNextSibling() {
-	if (_currentMenuItem.nextSibling == 0) return false;
-  _currentMenuItem = *_currentMenuItem.nextSibling;
+	if (_currentMenuItem._nextSibling == 0) return false;
+  _currentMenuItem = *_currentMenuItem._nextSibling;
   showMenuItemOnLCD();
 	return true;
 }
 
 bool Adafruit_LCDShield_Menu::executeFunctionCallback() {
-	if (currentMenuItem.onSelectFunction == 0) return false;
-	currentMenuItem.onSelectFunction();
+	if (_currentMenuItem._functionCallback == 0) return false;
+	_currentMenuItem._functionCallback();
+	showMenuItemOnLCD(); // Show the menu again after finishing the function
 	return true;
 }
 
-void Adafruit_LCDShield_Menu::navigateToItem(menuItem item) {
+void Adafruit_LCDShield_Menu::navigateToItem(LCDMenuItem item) {
 	_currentMenuItem = item;
 	showMenuItemOnLCD();
 }
 
-void Adafruit_LCDShield_Menu::showMenuItemOnLCD(menuItem item) {
-	lcd.clear();
-  lcd.home();
-	String menuString;
-	if (item == 0) {
-		menustring = item.menuString;
+void Adafruit_LCDShield_Menu::showMenuItemOnLCD() {
+	_lcd.clear();
+  _lcd.home();
+	String menustring = _currentMenuItem._menuString;
+  int indexdelimeter = menustring.indexOf(';');
+
+	// Check if the string has a delimeter
+	if (indexdelimeter == -1) {
+		_lcd.print(menustring);
 	}
 	else {
-		menustring = currentMenuItem.menuString;
+		_lcd.print(menustring.substring(0, indexdelimeter));
+  	_lcd.setCursor(0,1);
+  	_lcd.print(menustring.substring(indexdelimeter+1));
 	}
-  int indexdelimeter = menustring.indexOf(';');
-  lcd.print(menustring.substring(0, indexdelimeter));
-  lcd.setCursor(0,1);
-  lcd.print(menustring.substring(indexdelimeter+1));
-	
 }
