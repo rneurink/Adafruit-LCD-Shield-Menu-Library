@@ -9,11 +9,12 @@
 
 Adafruit_LCDShield_Menu	KEYWORD1
 LCDMenuItem	KEYWORD1
-LCDMenu	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
+
+addChild	KEYWORD2
 
 init	KEYWORD2
 navigateToParent	KEYWORD2

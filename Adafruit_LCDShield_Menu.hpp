@@ -15,15 +15,17 @@
 #include "Arduino.h"
 #include <Adafruit_RGBLCDShield.h>
 
+// Function pointer declaration for a void function without parameters
 typedef void (*genericVoidFunction) ();
 
+// The LCDMenuItem class. This represents an item the the menu.
 class LCDMenuItem {
 	friend class Adafruit_LCDShield_Menu;
 public:
-	LCDMenuItem();
+	LCDMenuItem(); 
 	LCDMenuItem(const char* menuString, genericVoidFunction functionCallback = nullptr);
 
-	void addChild(LCDMenuItem item);
+	void addChild(LCDMenuItem *item);
 protected:
 	const char *_menuString;
 	LCDMenuItem *_parent;
@@ -31,16 +33,21 @@ protected:
 	LCDMenuItem *_prevSibling;
 	LCDMenuItem *_nextSibling;
 	genericVoidFunction _functionCallback;
+	
 private:
+	// bool _debug = true;
 
+	// template <typename Generic>
+	// void DEBUG_LCDITEM(Generic text);
 };
 
+// The main class that acts as a wrapper for the LCDMenuItem class and handles navigation.
 class Adafruit_LCDShield_Menu {
 public:
-	Adafruit_LCDShield_Menu(Adafruit_RGBLCDShield lcd);
+	Adafruit_LCDShield_Menu();
 	~Adafruit_LCDShield_Menu();
 
-	void init();
+	void init(Adafruit_RGBLCDShield lcd);
 
 	void setRootMenu(LCDMenuItem item);
 
@@ -57,9 +64,12 @@ private:
 	void navigateToItem(LCDMenuItem item);
 	void showMenuItemOnLCD();
 
+	// bool _debug = true;
+
+	// template <typename Generic>
+	// void DEBUG_LCDMENU(Generic text);
+
 	LCDMenuItem _rootMenuItem;
 	LCDMenuItem _currentMenuItem;
 	Adafruit_RGBLCDShield _lcd;
-
-	
 };

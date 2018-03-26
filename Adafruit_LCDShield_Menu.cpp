@@ -31,10 +31,10 @@ LCDMenuItem::LCDMenuItem(const char *menuString, genericVoidFunction functionCal
 	else _functionCallback = 0;
 }
 
-void LCDMenuItem::addChild(LCDMenuItem item) {
+void LCDMenuItem::addChild(LCDMenuItem *item) {
 	if (this->_firstChild == 0) {
-		this->_firstChild = &item;
-		item._parent = this;
+		this->_firstChild = item;
+		item->_parent = this;
 	}
 	else {
 		LCDMenuItem *child = this->_firstChild;
@@ -44,24 +44,33 @@ void LCDMenuItem::addChild(LCDMenuItem item) {
 		{
 			child = child->_nextSibling;
 		}
-		child->_nextSibling = &item;
-		item._prevSibling = child;
-		item._parent = this;			
+		child->_nextSibling = item;
+		item->_prevSibling = child;
+		item->_parent = this;			
 	}
 }
 
+// template <typename Generic>
+// void LCDMenuItem::DEBUG_LCDITEM(Generic text) {
+// 	if (_debug) {
+// 		Serial.print(F("*LCDITEM: "));
+// 		Serial.println(text);
+// 	}
+// }
+
 
 /* ------------------ Constructor ---------------------- */
-Adafruit_LCDShield_Menu::Adafruit_LCDShield_Menu(Adafruit_RGBLCDShield lcd) {
-	_lcd = lcd;
+Adafruit_LCDShield_Menu::Adafruit_LCDShield_Menu() {
+	
 }
 /* ------------------ Destructor ----------------------- */
 Adafruit_LCDShield_Menu::~Adafruit_LCDShield_Menu() {
 
 }
 
-void Adafruit_LCDShield_Menu::init() {
-	
+/* ------------------ Init functions ------------------- */
+void Adafruit_LCDShield_Menu::init(Adafruit_RGBLCDShield lcd) {
+	_lcd = lcd;
 }
 
 void Adafruit_LCDShield_Menu::setRootMenu(LCDMenuItem item) {
@@ -75,35 +84,35 @@ void Adafruit_LCDShield_Menu::navigateToRoot() {
 }
 
 bool Adafruit_LCDShield_Menu::navigateToParent() {
-	if (_currentMenuItem._parent == 0) return false;
+	if (_currentMenuItem._parent == 0) { return false; }
   _currentMenuItem = *_currentMenuItem._parent;
   showMenuItemOnLCD();
 	return true;
 }
 
 bool Adafruit_LCDShield_Menu::navigateToChild() {
-	if (_currentMenuItem._firstChild == 0) return false;
+	if (_currentMenuItem._firstChild == 0) { return false; }
   _currentMenuItem = *_currentMenuItem._firstChild;
   showMenuItemOnLCD();
 	return true;
 }
 
 bool Adafruit_LCDShield_Menu::navigateToPreviousSibling() {
-	if (_currentMenuItem._prevSibling == 0) return false;
+	if (_currentMenuItem._prevSibling == 0) { return false; }
   _currentMenuItem = *_currentMenuItem._prevSibling;
   showMenuItemOnLCD();
 	return true;
 }
 
 bool Adafruit_LCDShield_Menu::navigateToNextSibling() {
-	if (_currentMenuItem._nextSibling == 0) return false;
+	if (_currentMenuItem._nextSibling == 0) { return false; }
   _currentMenuItem = *_currentMenuItem._nextSibling;
   showMenuItemOnLCD();
 	return true;
 }
 
 bool Adafruit_LCDShield_Menu::executeFunctionCallback() {
-	if (_currentMenuItem._functionCallback == 0) return false;
+	if (_currentMenuItem._functionCallback == 0) { return false; }
 	_currentMenuItem._functionCallback();
 	showMenuItemOnLCD(); // Show the menu again after finishing the function
 	return true;
@@ -130,3 +139,12 @@ void Adafruit_LCDShield_Menu::showMenuItemOnLCD() {
   	_lcd.print(menustring.substring(indexdelimeter+1));
 	}
 }
+
+/* ------------------ Debug functions ------------------ */
+// template <typename Generic>
+// void Adafruit_LCDShield_Menu::DEBUG_LCDMENU(Generic text) {
+// 	if (_debug) {
+// 		Serial.print(F("*LCDMENU: "));
+// 		Serial.println(text);
+// 	}
+// }
