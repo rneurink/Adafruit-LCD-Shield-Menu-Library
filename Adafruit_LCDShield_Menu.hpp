@@ -15,6 +15,8 @@
 #include "Arduino.h"
 #include <Adafruit_RGBLCDShield.h>
 
+#define Adafruit_LCDShield_Menu_VERSION "1.0.0"
+
 // Function pointer declaration for a void function without parameters
 typedef void (*genericVoidFunction) ();
 
@@ -57,6 +59,8 @@ public:
 	bool navigateToPreviousSibling();
 	bool navigateToNextSibling();
 	bool executeFunctionCallback();
+
+	String version();
 	
 protected:
 

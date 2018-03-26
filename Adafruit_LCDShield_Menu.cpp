@@ -140,6 +140,10 @@ void Adafruit_LCDShield_Menu::showMenuItemOnLCD() {
 	}
 }
 
+String Adafruit_LCDShield_Menu::version() {
+	return String(Adafruit_LCDShield_Menu_VERSION);
+}
+
 /* ------------------ Debug functions ------------------ */
 // template <typename Generic>
 // void Adafruit_LCDShield_Menu::DEBUG_LCDMENU(Generic text) {
